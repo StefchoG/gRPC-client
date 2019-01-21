@@ -1,0 +1,40 @@
+//
+// proto3
+// Syntax documentation - see https://developers.google.com/protocol-buffers/docs/proto3
+//
+syntax = "proto3";
+
+// GRPC package, also used by the Go code generator
+package blueprint;
+
+// Java code generation options
+option java_generic_services = true;
+option java_multiple_files = true;
+option java_package = "com.intracol.blueprint.grpc";
+option java_outer_classname = "BlueprintProto";
+
+
+service AccountService {
+    rpc register(RegisterRequest) returns (RegisterResponse);
+}
+
+message RegisterError {
+    enum Cause {
+        INTERNAL_SERVER_ERROR = 0;
+        WRONG_EMAIL_OR_PASSWORD = 1;
+    }
+    Cause cause = 1;
+}
+
+message RegisterRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message RegisterResponse {
+	oneof result {
+		RegisterError error = 1;
+		string status = 2;
+	}
+}
+
