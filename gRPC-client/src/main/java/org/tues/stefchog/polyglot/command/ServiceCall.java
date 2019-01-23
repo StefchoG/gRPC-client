@@ -48,7 +48,8 @@ public class ServiceCall {
       Optional<Path> protoDiscoveryRoot,
       Optional<Path> configSetPath,
       ImmutableList<Path> additionalProtocIncludes,
-      CallConfiguration callConfig) {
+      CallConfiguration callConfig,
+      ImmutableList<DynamicMessage> requestMessages) {
     Preconditions.checkState(endpoint.isPresent(), "--endpoint argument required");
     Preconditions.checkState(fullMethod.isPresent(), "--full_method argument required");
     validatePath(protoDiscoveryRoot);
@@ -101,8 +102,6 @@ public class ServiceCall {
         .add(serviceResolver.listMessageTypes())
         .build();
 
-    ImmutableList<DynamicMessage> requestMessages =
-        MessageReader.forStdin(methodDescriptor.getInputType(), registry).read();
     StreamObserver<DynamicMessage> streamObserver = CompositeStreamObserver.of(
         new LoggingStatsWriter(), MessageWriter.create(output, registry));
     logger.info(String.format(
