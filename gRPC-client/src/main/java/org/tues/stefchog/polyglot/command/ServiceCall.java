@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 import org.tues.stefchog.polyglot.ConfigProto.CallConfiguration;
 import org.tues.stefchog.polyglot.ConfigProto.ProtoConfiguration;
 
+//Import log4j classes.
+import org.apache.log4j.BasicConfigurator;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;

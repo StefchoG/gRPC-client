@@ -15,6 +15,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.TextField;
 import javax.swing.JTextArea;
+import javax.swing.JScrollBar;
+import java.awt.Color;
 
 public class ClientView extends TestClient {
 
@@ -51,26 +53,28 @@ public class ClientView extends TestClient {
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		frame.getContentPane().setLayout(gridBagLayout);
 		
 		JTextArea textArea = new JTextArea();
 		GridBagConstraints gbc_textArea = new GridBagConstraints();
-		gbc_textArea.gridheight = 3;
-		gbc_textArea.gridwidth = 15;
+		gbc_textArea.gridheight = 6;
+		gbc_textArea.gridwidth = 17;
 		gbc_textArea.insets = new Insets(0, 0, 5, 5);
 		gbc_textArea.fill = GridBagConstraints.BOTH;
-		gbc_textArea.gridx = 2;
+		gbc_textArea.gridx = 1;
 		gbc_textArea.gridy = 0;
 		frame.getContentPane().add(textArea, gbc_textArea);
+		
+		String text = textArea.getText();
 		
 		JButton btnSend = new JButton("Send!");
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				TestClient.main(textArea.toString()); //TODO: FIND A WAY TO SEND THE TEXT!
+//				TestClient.main(text); //TODO: FIND A WAY TO SEND THE TEXT!
 			}
 		});
 		
@@ -81,6 +85,16 @@ public class ClientView extends TestClient {
 		gbc_chckbxAddInHistory.gridx = 7;
 		gbc_chckbxAddInHistory.gridy = 6;
 		frame.getContentPane().add(chckbxAddInHistory, gbc_chckbxAddInHistory);
+		
+		JScrollBar scrollBar = new JScrollBar();
+		scrollBar.setBackground(new Color(200, 200, 200));
+		GridBagConstraints gbc_scrollBar = new GridBagConstraints();
+		gbc_scrollBar.fill = GridBagConstraints.BOTH;
+		gbc_scrollBar.gridheight = 8;
+		gbc_scrollBar.insets = new Insets(0, 0, 5, 5);
+		gbc_scrollBar.gridx = 18;
+		gbc_scrollBar.gridy = 0;
+		frame.getContentPane().add(scrollBar, gbc_scrollBar);
 		GridBagConstraints gbc_btnSend = new GridBagConstraints();
 		gbc_btnSend.gridwidth = 4;
 		gbc_btnSend.fill = GridBagConstraints.VERTICAL;
