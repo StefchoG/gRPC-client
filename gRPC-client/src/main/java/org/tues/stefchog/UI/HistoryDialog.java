@@ -1,4 +1,4 @@
-package org.tues.stefchog.polyglot;
+package org.tues.stefchog.UI;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
