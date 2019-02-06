@@ -4,10 +4,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.net.HostAndPort;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import com.google.protobuf.Descriptors.MethodDescriptor;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.util.JsonFormat.TypeRegistry;
+import org.tues.stefchog.polyglot.ConfigProto;
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.Status;
@@ -32,6 +34,8 @@ import org.tues.stefchog.polyglot.ConfigProto.ProtoConfiguration;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +43,75 @@ import java.util.concurrent.TimeUnit;
 public class ServiceCall {
   private static final Logger logger = LoggerFactory.getLogger(ServiceCall.class);
 
+  
+    public static List<DynamicMessage> blockingCallEndpoint(
+      ProtoConfiguration protoConfig,
+      String endpoint,
+      String fullMethod,
+      CallConfiguration callConfig,
+      ImmutableList<DynamicMessage> requestMessages) {
+     
+      return  blockingCallEndpoint(
+                protoConfig,
+                Optional.of(endpoint),
+                Optional.of(fullMethod),
+                Optional.empty(),
+                Optional.empty(),
+                ImmutableList.copyOf(new ArrayList()),
+                callConfig,
+                requestMessages);
+    
+    }
+  
+     /** Calls the endpoint specified in the arguments */
+  public static List<DynamicMessage> blockingCallEndpoint(
+      ProtoConfiguration protoConfig,
+      Optional<String> endpoint,
+      Optional<String> fullMethod,
+      Optional<Path> protoDiscoveryRoot,
+      Optional<Path> configSetPath,
+      ImmutableList<Path> additionalProtocIncludes,
+      CallConfiguration callConfig,
+      ImmutableList<DynamicMessage> requestMessages) {
+    Preconditions.checkState(endpoint.isPresent(), "--endpoint argument required");
+    Preconditions.checkState(fullMethod.isPresent(), "--full_method argument required");
+    validatePath(protoDiscoveryRoot);
+    validatePath(configSetPath);
+    validatePaths(additionalProtocIncludes);
+
+    HostAndPort hostAndPort = HostAndPort.fromString(endpoint.get());
+    ProtoMethodName grpcMethodName =
+        ProtoMethodName.parseFullGrpcMethodName(fullMethod.get());
+    ChannelFactory channelFactory = ChannelFactory.create(callConfig);
+
+    logger.info("Creating channel to: " + hostAndPort.toString());
+    Channel channel;
+    if (callConfig.hasOauthConfig()) {
+      channel = channelFactory.createChannelWithCredentials(
+          hostAndPort, new OauthCredentialsFactory(callConfig.getOauthConfig()).getCredentials());
+    } else {
+      channel = channelFactory.createChannel(hostAndPort);
+    }
+
+    FileDescriptorSet fileDescriptorSet 
+            = constructFileDescriptor(protoConfig, channel, grpcMethodName);
+
+    // Set up the dynamic client and make the call.
+    ServiceResolver serviceResolver = ServiceResolver.fromFileDescriptorSet(fileDescriptorSet);
+    MethodDescriptor methodDescriptor = serviceResolver.resolveServiceMethod(grpcMethodName);
+
+    logger.info("Creating dynamic grpc client");
+    DynamicGrpcClient dynamicClient = DynamicGrpcClient.create(methodDescriptor, channel);
+
+    logger.info(String.format(
+        "Making rpc with %d request(s) to endpoint [%s]", requestMessages.size(), hostAndPort));
+    try {
+      return dynamicClient.blockingCall(requestMessages, callOptions(callConfig));
+    } catch (Throwable t) {
+      throw new RuntimeException("Caught exception while waiting for rpc", t);
+    }
+  }
+  
   /** Calls the endpoint specified in the arguments */
   public static void callEndpoint(
       Output output,
@@ -70,25 +143,8 @@ public class ServiceCall {
       channel = channelFactory.createChannel(hostAndPort);
     }
 
-    // Fetch the appropriate file descriptors for the service.
-    final FileDescriptorSet fileDescriptorSet;
-    Optional<FileDescriptorSet> reflectionDescriptors = Optional.empty();
-    if (protoConfig.getUseReflection()) {
-      reflectionDescriptors =
-          resolveServiceByReflection(channel, grpcMethodName.getFullServiceName());
-    }
-
-    if (reflectionDescriptors.isPresent()) {
-      logger.info("Using proto descriptors fetched by reflection");
-      fileDescriptorSet = reflectionDescriptors.get();
-    } else {
-      try {
-        fileDescriptorSet = ProtocInvoker.forConfig(protoConfig).invoke();
-        logger.info("Using proto descriptors obtained from protoc");
-      } catch (Throwable t) {
-        throw new RuntimeException("Unable to resolve service by invoking protoc", t);
-      }
-    }
+    FileDescriptorSet fileDescriptorSet 
+            = constructFileDescriptor(protoConfig, channel, grpcMethodName);
 
     // Set up the dynamic client and make the call.
     ServiceResolver serviceResolver = ServiceResolver.fromFileDescriptorSet(fileDescriptorSet);
@@ -113,9 +169,30 @@ public class ServiceCall {
     }
   }
 
+    private static FileDescriptorSet constructFileDescriptor(ProtoConfiguration protoConfig, Channel channel, ProtoMethodName grpcMethodName) throws RuntimeException {
+        // Fetch the appropriate file descriptors for the service.
+        final FileDescriptorSet fileDescriptorSet;
+        Optional<FileDescriptorSet> reflectionDescriptors = Optional.empty();
+        if (protoConfig.getUseReflection()) {
+            reflectionDescriptors =
+                    resolveServiceByReflection(channel, grpcMethodName.getFullServiceName());
+        }   if (reflectionDescriptors.isPresent()) {
+            logger.info("Using proto descriptors fetched by reflection");
+            fileDescriptorSet = reflectionDescriptors.get();
+        } else {
+            try {
+                fileDescriptorSet = ProtocInvoker.forConfig(protoConfig).invoke();
+                logger.info("Using proto descriptors obtained from protoc");
+            } catch (Throwable t) {
+                throw new RuntimeException("Unable to resolve service by invoking protoc", t);
+            }
+        }   
+        return fileDescriptorSet;
+    }
+
   /**
    * Returns a {@link FileDescriptorSet} describing the supplied service if the remote server
-   * advertizes it by reflection. Returns an empty optional if the remote server doesn't support
+   * advertises it by reflection. Returns an empty optional if the remote server doesn't support
    * reflection. Throws a NOT_FOUND exception if we determine that the remote server does not
    * support the requested service (but *does* support the reflection service).
    */

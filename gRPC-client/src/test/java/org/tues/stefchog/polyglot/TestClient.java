@@ -7,9 +7,9 @@ package org.tues.stefchog.polyglot;
 
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.DescriptorProtos;
+import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.DynamicMessage;
-import com.sdt.gtl.polyglot.ProtobufEnvelope;
 import org.tues.stefchog.polyglot.ConfigProto;
 import org.tues.stefchog.polyglot.ConfigProto.OutputConfiguration;
 import org.tues.stefchog.polyglot.ConfigProto.OutputConfiguration.Destination;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.tues.stefchog.polyglot.protobuf.ProtocInvoker;
 
 /**
  *
@@ -52,7 +53,8 @@ public static void main(String[] args) {
                 ConfigProto.CallConfiguration.newBuilder().
                         setUseTls(false).build();
        
-        ImmutableList<DynamicMessage> requestMessageList = constructRequestMessage();
+        ImmutableList<DynamicMessage> requestMessageList =
+                constructRequestMessage(getFileDescriptors(protoConfig));
         ServiceCall.callEndpoint(output,
                 protoConfig,
                 Optional.of("localhost:6565"),
@@ -64,13 +66,23 @@ public static void main(String[] args) {
                 requestMessageList);
     }
     
-     private ImmutableList<DynamicMessage> constructRequestMessage() {
+     private DescriptorProtos.FileDescriptorSet getFileDescriptors(ConfigProto.ProtoConfiguration protoConfig) {
+        try {
+            System.out.println("Using proto descriptors obtained from protoc");
+            return ProtocInvoker.forConfig(protoConfig).invoke();
+        } catch (Throwable t) {
+            throw new RuntimeException("Unable to resolve service by invoking protoc", t);
+        }
+
+    }
+    
+     private ImmutableList<DynamicMessage> constructRequestMessage(FileDescriptorSet fileDescriptorSet) {
         ProtobufEnvelope pe = new ProtobufEnvelope();
         pe.<String>addField("email", "test@email.com", DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING);
         pe.<String>addField("password", "abc", DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING);
         DynamicMessage m = null;
         try {
-            m = pe.constructMessage("RegisterRequest");
+            m = pe.constructMessage("RegisterRequest", fileDescriptorSet);
         } catch (Descriptors.DescriptorValidationException ex) {
             Logger.getLogger(TestClient.class.getName()).log(Level.SEVERE, null, ex);
         }
