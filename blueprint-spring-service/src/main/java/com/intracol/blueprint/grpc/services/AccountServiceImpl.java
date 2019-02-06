@@ -29,6 +29,11 @@ public class AccountServiceImpl extends AccountServiceImplBase {
                     .setError(RegisterError.newBuilder().setCause(Cause.WRONG_EMAIL_OR_PASSWORD)).build());
             responseObserver.onCompleted();
         } else {
+            if (request.getRole().equals(Role.ADMIN) || request.getRole().equals(Role.UNDEFINED)) {
+                responseObserver.onNext(RegisterResponse.newBuilder()
+                        .setError(RegisterError.newBuilder().setCause(Cause.WRONG_EMAIL_OR_PASSWORD)).build());
+                responseObserver.onCompleted();
+            }
 
             RegisterResponse response = RegisterResponse.newBuilder().setStatus("You logged successfully").build();
 
@@ -38,5 +43,21 @@ public class AccountServiceImpl extends AccountServiceImplBase {
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         }
+    }
+
+    @Override
+    public void getUser(GetUserRequest request, StreamObserver<UserResponse> responseObserver) {
+        if (request.getAccount().getId().equals("123")) {
+            Account account = Account.newBuilder().setId("123").setUsername("username1234").setRole(Role.USER).build();
+            UserResponse response = UserResponse.newBuilder().setAccount(account).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
+
+        responseObserver.onNext(UserResponse.newBuilder().setError(RequestError.newBuilder()
+                .setCause(RequestError.Cause.WRONG_PARAMETERS).setMessgae("Account with specified id is not found"))
+                .build());
+        responseObserver.onCompleted();
+
     }
 }
