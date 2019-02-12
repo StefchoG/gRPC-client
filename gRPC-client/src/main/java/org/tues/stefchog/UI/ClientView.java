@@ -80,7 +80,7 @@ public class ClientView {
 		btnNewButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(btnNewButton, this, txtrSyntax.getText(), 0);
+				JOptionPane.showMessageDialog(btnNewButton,txtrSyntax.getText());
 			}
 		});
 		

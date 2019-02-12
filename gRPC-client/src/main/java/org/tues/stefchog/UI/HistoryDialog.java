@@ -8,10 +8,14 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
+import javax.swing.AbstractAction;
+import java.awt.event.ActionEvent;
+import javax.swing.Action;
 
 public class HistoryDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
+	private final Action action = new SwingAction();
 
 	/**
 	 * Launch the application.
@@ -43,6 +47,7 @@ public class HistoryDialog extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("OK");
+				okButton.setAction(action);
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
@@ -55,4 +60,13 @@ public class HistoryDialog extends JDialog {
 		}
 	}
 
+	private class SwingAction extends AbstractAction {
+		public SwingAction() {
+			putValue(NAME, "OK");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+			dispose();
+		}
+		public void actionPerformed(ActionEvent e) {
+		}
+	}
 }
