@@ -4,8 +4,13 @@ import java.awt.Color;
 import java.awt.Dialog.ModalityType;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -18,9 +23,20 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import com.google.protobuf.Descriptors.DescriptorValidationException;
+
+import io.grpc.internal.testing.TestClientStreamTracer;
+import javax.swing.JTextField;
+import javax.swing.JFormattedTextField;
+import javax.swing.JPanel;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
 public class ClientView {
 
 	private JFrame frame;
+	private JTextField textFieldName;
+	private JTextField textFieldValue;
 
 	/**
 	 * Launch the application.
@@ -59,59 +75,112 @@ public class ClientView {
 		Border border = BorderFactory.createLineBorder(Color.BLACK);
 	    frame.getContentPane().setLayout(null);
 	    
+	    JLabel lblNewLabel = new JLabel("Polyglot - a GUI client!");
+	    lblNewLabel.setBounds(0, 0, 193, 29);
+	    lblNewLabel.setForeground(new Color(255, 165, 0));
+	    lblNewLabel.setBackground(new Color(0, 0, 0));
+	    lblNewLabel.setFont(new Font("Arial", Font.BOLD, 18));
+	    frame.getContentPane().add(lblNewLabel);
+	    
+	    JButton historyButton = new JButton("History?");
+	    historyButton.setBounds(382, 3, 71, 23);
+	    frame.getContentPane().add(historyButton);
+	    
+	    historyButton.addActionListener(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+	    		try {
+	    			HistoryDialog dialog = new HistoryDialog();
+	    		    dialog.setModalityType(ModalityType.APPLICATION_MODAL);
+	    		    dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+	    		    dialog.setVisible(true);
+	    		} catch (Exception ex) {
+	    			ex.printStackTrace();
+	    		}
+	    	}		});
+	    
 	    JScrollBar scrollBar = new JScrollBar();
-	    scrollBar.setBounds(467, 0, 17, 360);
+	    scrollBar.setBounds(458, 0, 17, 351);
 	    frame.getContentPane().add(scrollBar);
 	    
-	    JTextArea txtrSyntax = new JTextArea();
-	    txtrSyntax.setBounds(10, 45, 447, 269);
-	    txtrSyntax.setBorder(BorderFactory.createCompoundBorder(border,
-	            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-	    
-	    
-	    
-	    frame.getContentPane().add(txtrSyntax);
+	    JLabel labelKeyName = new JLabel("Key name");
+	    labelKeyName.setBounds(0, 34, 87, 14);
+	    frame.getContentPane().add(labelKeyName);
 		
-		JButton btnNewButton = new JButton("Send!");
-		btnNewButton.setBounds(10, 325, 92, 23);
-		btnNewButton.setVerticalAlignment(SwingConstants.BOTTOM);
-		frame.getContentPane().add(btnNewButton);
+				JLabel labelKeyValue = new JLabel("Key value");
+				labelKeyValue.setBounds(92, 34, 101, 14);
+				frame.getContentPane().add(labelKeyValue);
 		
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton addFormButton = new JButton("+");
+		addFormButton.setBounds(412, 40, 41, 23);
+		frame.getContentPane().add(addFormButton);
+		
+		
+		List<JTextField>textFieldNames = new ArrayList();
+		List<JTextField>textFieldValues = new ArrayList();
+
+		
+		addFormButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(btnNewButton,txtrSyntax.getText());
+				//Create a new line on field values
+				System.out.println("Adding new item" + textFieldNames.size());
+				JTextField name = new JTextField();
+				JTextField value = new JTextField();
+				
+				//Create the 
+				name.setBounds(10,textFieldNames.size()  * 30 + 55, 86, 20);
+				name.setColumns(10);
+				value.setBounds(117,textFieldNames.size()  * 30 + 55, 86, 20);
+				value.setColumns(10);
+				
+				textFieldNames.add(name);
+				textFieldValues.add(value);
+
+				for(int i=0;i<textFieldNames.size();i++) {
+					frame.getContentPane().add(textFieldNames.get(i));
+					frame.getContentPane().add(textFieldValues.get(i));
+					//Update the GUI
+					frame.repaint();
+				}
 			}
 		});
 		
-		JLabel lblNewLabel = new JLabel("Polyglot - a GUI client!");
-		lblNewLabel.setForeground(new Color(255, 165, 0));
-		lblNewLabel.setBackground(new Color(0, 0, 0));
-		lblNewLabel.setFont(new Font("Arial", Font.BOLD, 18));
-		lblNewLabel.setBounds(10, 0, 193, 34);
-		frame.getContentPane().add(lblNewLabel);
 		
-		JButton btnNewButton_1 = new JButton("Already have protobuf?");
-		btnNewButton_1.setForeground(new Color(0, 0, 0));
-		btnNewButton_1.setBackground(new Color(255, 255, 255));
-		btnNewButton_1.setBounds(311, 326, 147, 23);
-		frame.getContentPane().add(btnNewButton_1);
+
 		
-		JButton btnNewButton_2 = new JButton("History?");
-		btnNewButton_2.setBounds(368, 8, 89, 23);
-		frame.getContentPane().add(btnNewButton_2);
+		JButton sendButton = new JButton("Send!");
+		sendButton.setBounds(0, 316, 87, 23);
+		sendButton.setVerticalAlignment(SwingConstants.BOTTOM);
+		frame.getContentPane().add(sendButton);
 		
-		btnNewButton_2.addActionListener(new ActionListener() {
+		sendButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				Client client = new Client();
+				String resultMessage = "";
 				try {
-					HistoryDialog dialog = new HistoryDialog();
-				    dialog.setModalityType(ModalityType.APPLICATION_MODAL);
-				    dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				    dialog.setVisible(true);
-				} catch (Exception ex) {
-					ex.printStackTrace();
+				    List<String> names = textFieldNames.stream().map(n -> n.getText()).collect(Collectors.toList());
+				    
+				    List<String> values = textFieldValues.stream().map(v -> v.getText()).collect(Collectors.toList());
+
+					resultMessage = client.execute(names , values);
+					
+				} catch (DescriptorValidationException e1) {
+					// TODO Auto-generated catch block
+					String errorMessage = "error Exception get message:" + e1.getMessage();
+					JOptionPane.showMessageDialog(sendButton, errorMessage);
 				}
-			}		});
+				JOptionPane.showMessageDialog(sendButton,resultMessage);
+			}
+		});
+		
+		JButton protoButton = new JButton("Already have protobuf?");
+		protoButton.setBounds(306, 316, 147, 23);
+		protoButton.setForeground(new Color(0, 0, 0));
+		protoButton.setBackground(new Color(255, 255, 255));
+		frame.getContentPane().add(protoButton);
+		
+		
 	}
 }
