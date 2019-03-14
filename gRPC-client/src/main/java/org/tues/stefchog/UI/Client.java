@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 public class Client {
 	
 	List<String> names = new ArrayList();
-	List<String>values = new ArrayList();
+	List<String> values = new ArrayList();
 	
     public String execute(List<String> names , List<String>values) throws DescriptorValidationException {
     	
@@ -81,17 +81,13 @@ public class Client {
     
      private ImmutableList<DynamicMessage> constructRequestMessage(FileDescriptorSet fileDescriptor) throws DescriptorValidationException {
         ProtobufEnvelope pe = new ProtobufEnvelope();
-       
-       // pe.<String>addField("email", "test@email.com", DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING);  
-       //pe.<String>addField("email", messageToSend, DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING);
         
        for (int i = 0; i < names.size(); i++) {
     	   pe.<String>addField(names.get(i), values.get(i), DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING);
        }
 
-       // pe.<String>addField("password", "abc", DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING);
         DynamicMessage m = null;
-        m = pe.constructMessage("RegisterRequest", fileDescriptor);       
+        m = pe.constructMessage("RegisterRequest", fileDescriptor);  //have to match the parameters with the proto     
         List<DynamicMessage> messageList = new ArrayList();
         messageList.add(m);
         ImmutableList<DynamicMessage> requestMessageList = ImmutableList.copyOf(messageList);

@@ -83,7 +83,7 @@ public class ClientView {
 	    frame.getContentPane().add(lblNewLabel);
 	    
 	    JButton historyButton = new JButton("History?");
-	    historyButton.setBounds(382, 3, 71, 23);
+	    historyButton.setBounds(403, 5, 71, 23);
 	    frame.getContentPane().add(historyButton);
 	    
 	    historyButton.addActionListener(new ActionListener() {
@@ -99,20 +99,16 @@ public class ClientView {
 	    		}
 	    	}		});
 	    
-	    JScrollBar scrollBar = new JScrollBar();
-	    scrollBar.setBounds(458, 0, 17, 351);
-	    frame.getContentPane().add(scrollBar);
-	    
 	    JLabel labelKeyName = new JLabel("Key name");
-	    labelKeyName.setBounds(0, 34, 87, 14);
+	    labelKeyName.setBounds(21, 34, 87, 14);
 	    frame.getContentPane().add(labelKeyName);
 		
 				JLabel labelKeyValue = new JLabel("Key value");
-				labelKeyValue.setBounds(92, 34, 101, 14);
+				labelKeyValue.setBounds(118, 34, 101, 14);
 				frame.getContentPane().add(labelKeyValue);
 		
-		JButton addFormButton = new JButton("+");
-		addFormButton.setBounds(412, 40, 41, 23);
+		JButton addFormButton = new JButton("Add");
+		addFormButton.setBounds(413, 40, 61, 23);
 		frame.getContentPane().add(addFormButton);
 		
 		
@@ -150,7 +146,7 @@ public class ClientView {
 
 		
 		JButton sendButton = new JButton("Send!");
-		sendButton.setBounds(0, 316, 87, 23);
+		sendButton.setBounds(10, 315, 87, 23);
 		sendButton.setVerticalAlignment(SwingConstants.BOTTOM);
 		frame.getContentPane().add(sendButton);
 		
@@ -161,7 +157,6 @@ public class ClientView {
 				String resultMessage = "";
 				try {
 				    List<String> names = textFieldNames.stream().map(n -> n.getText()).collect(Collectors.toList());
-				    
 				    List<String> values = textFieldValues.stream().map(v -> v.getText()).collect(Collectors.toList());
 
 					resultMessage = client.execute(names , values);
@@ -176,7 +171,7 @@ public class ClientView {
 		});
 		
 		JButton protoButton = new JButton("Already have protobuf?");
-		protoButton.setBounds(306, 316, 147, 23);
+		protoButton.setBounds(306, 316, 168, 23);
 		protoButton.setForeground(new Color(0, 0, 0));
 		protoButton.setBackground(new Color(255, 255, 255));
 		frame.getContentPane().add(protoButton);

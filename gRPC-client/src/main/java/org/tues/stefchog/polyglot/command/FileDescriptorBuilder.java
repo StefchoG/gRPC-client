@@ -3,16 +3,16 @@ package org.tues.stefchog.polyglot.command;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.DescriptorProtos;
-import com.sdt.gtl.polyglot.ConfigProto;
-import com.sdt.gtl.polyglot.grpc.ServerReflectionClient;
-import com.sdt.gtl.polyglot.protobuf.ProtoMethodName;
-import com.sdt.gtl.polyglot.protobuf.ProtocInvoker;
 import io.grpc.Channel;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tues.stefchog.polyglot.ConfigProto;
+import org.tues.stefchog.polyglot.grpc.ServerReflectionClient;
+import org.tues.stefchog.polyglot.protobuf.ProtoMethodName;
+import org.tues.stefchog.polyglot.protobuf.ProtocInvoker;
 
 /**
  *
@@ -31,7 +31,7 @@ public class FileDescriptorBuilder {
         try {
             logger.info("Using proto descriptors obtained from protoc");
 
-            return ProtocInvoker.forConfig(protoConfig).invoke();
+            return ProtocInvoker.forConfig(protoConfig).invoke(); //results in fileDescriptorSet
 
         } catch (Throwable t) {
             throw new RuntimeException("Unable to resolve service by invoking protoc", t);

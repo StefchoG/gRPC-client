@@ -64,13 +64,13 @@ public class ProtobufEnvelope {
         FileDescriptor dynamicDescriptor = FileDescriptor.buildFrom(fileDescP, fileDescriptorsArray);
         Descriptor msgDescriptor = dynamicDescriptor.findMessageTypeByName(messageName);
         DynamicMessage.Builder dmBuilder
-                = DynamicMessage.newBuilder(msgDescriptor);
+                = DynamicMessage.newBuilder(msgDescriptor); //need for dynamicMessage
         for (String name : values.keySet()) {
             Object value = values.get(name);
-            FieldDescriptor.Type type = msgDescriptor.findFieldByName(name).getType();
-            if(type​.equals(FieldDescriptor.Type.ENUM)) {
+            FieldDescriptor.Type type = msgDescriptor.findFieldByName(name).getType(); //find 'name' in msgDescriptor
+            if(type.equals(FieldDescriptor.Type.ENUM)) { //
                 value = msgDescriptor.findFieldByName(name).getEnumType().findValueByName((String)values.get(name));
-            } else  if(type​.equals(FieldDescriptor.Type.MESSAGE)) {
+            } else  if(type.equals(FieldDescriptor.Type.MESSAGE)) {
                 msgDescriptor.findFieldByName(name).getMessageType();
             }
             dmBuilder.setField(msgDescriptor.findFieldByName(name), value);

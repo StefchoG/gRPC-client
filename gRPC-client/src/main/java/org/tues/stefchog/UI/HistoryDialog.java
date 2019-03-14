@@ -11,6 +11,7 @@ import java.awt.Color;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import javax.swing.Action;
+import javax.swing.JLabel;
 
 public class HistoryDialog extends JDialog {
 
@@ -40,6 +41,10 @@ public class HistoryDialog extends JDialog {
 		contentPanel.setLayout(new FlowLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		{
+			JLabel lblNoHistory = new JLabel("No History!");
+			contentPanel.add(lblNoHistory);
+		}
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setBackground(new Color(255, 255, 255));
