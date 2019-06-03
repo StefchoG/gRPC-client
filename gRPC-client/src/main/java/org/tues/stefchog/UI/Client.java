@@ -44,6 +44,8 @@ public class Client {
 	
 	String requestHistoryFileName = "Requests-history.txt";
 	
+	RequestHistoryWriter writeRequestToFile = new RequestHistoryWriter(requestHistoryFileName);
+	
     public String execute(List<String> names , List<String>values) throws DescriptorValidationException {
     	
     	//
@@ -51,20 +53,7 @@ public class Client {
     	this.values = values;
     	//
     	
-    	PrintWriter writer;
-		try {
-
-			writer = new PrintWriter(new FileOutputStream(new File(requestHistoryFileName),true));
-			//writer = new PrintWriter("Requests-history.txt", "UTF-8");
-			writer.println(names);
-	    	writer.println(values);
-	    	writer.println("delimiter");
-	    	writer.close();
-	    	System.out.println("request saved to file");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	writeRequestToFile.writeRequestFIle(names, values);
     	
         OutputConfiguration outputconf = OutputConfiguration.newBuilder().
                 setDestination(Destination.STDOUT).build();
