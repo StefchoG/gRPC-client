@@ -31,6 +31,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import javax.swing.JScrollPane;
 
 public class ClientView {
 
@@ -82,8 +83,8 @@ public class ClientView {
 	    lblNewLabel.setFont(new Font("Arial", Font.BOLD, 18));
 	    frame.getContentPane().add(lblNewLabel);
 	    
-	    JButton historyButton = new JButton("History?");
-	    historyButton.setBounds(403, 5, 71, 23);
+	    JButton historyButton = new JButton("History");
+	    historyButton.setBounds(393, 5, 81, 23);
 	    frame.getContentPane().add(historyButton);
 	    
 	    historyButton.addActionListener(new ActionListener() {
@@ -111,6 +112,10 @@ public class ClientView {
 		addFormButton.setBounds(413, 40, 61, 23);
 		frame.getContentPane().add(addFormButton);
 		
+//		JScrollPane scrollPane = new JScrollPane();
+//		scrollPane.setBounds(10, 46, 209, 258);
+//		frame.getContentPane().add(scrollPane);
+		
 		
 		List<JTextField>textFieldNames = new ArrayList();
 		List<JTextField>textFieldValues = new ArrayList();
@@ -123,6 +128,7 @@ public class ClientView {
 				System.out.println("Adding new item" + textFieldNames.size());
 				JTextField name = new JTextField();
 				JTextField value = new JTextField();
+
 				
 				//Create the 
 				name.setBounds(10,textFieldNames.size()  * 30 + 55, 86, 20);
@@ -132,7 +138,12 @@ public class ClientView {
 				
 				textFieldNames.add(name);
 				textFieldValues.add(value);
-
+				
+//				scrollPane.add(name);
+//				scrollPane.add(value);
+//				scrollPane.setViewportView(name);
+//				scrollPane.setViewportView(value);
+				
 				for(int i=0;i<textFieldNames.size();i++) {
 					frame.getContentPane().add(textFieldNames.get(i));
 					frame.getContentPane().add(textFieldValues.get(i));
@@ -149,6 +160,7 @@ public class ClientView {
 		sendButton.setBounds(10, 315, 87, 23);
 		sendButton.setVerticalAlignment(SwingConstants.BOTTOM);
 		frame.getContentPane().add(sendButton);
+		
 		
 		sendButton.addActionListener(new ActionListener() {
 			@Override
@@ -168,14 +180,6 @@ public class ClientView {
 				}
 				JOptionPane.showMessageDialog(sendButton,resultMessage);
 			}
-		});
-		
-		JButton protoButton = new JButton("Already have protobuf?");
-		protoButton.setBounds(306, 316, 168, 23);
-		protoButton.setForeground(new Color(0, 0, 0));
-		protoButton.setBackground(new Color(255, 255, 255));
-		frame.getContentPane().add(protoButton);
-		
-		
+		});		
 	}
 }

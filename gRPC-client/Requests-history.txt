@@ -1,0 +1,9 @@
+[is, the]
+[this, second]
+delimiter
+[111, 333]
+[222, 444]
+delimiter
+[stop, requests]
+[theese, broo]
+delimiter

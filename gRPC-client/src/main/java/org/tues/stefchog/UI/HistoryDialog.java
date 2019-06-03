@@ -12,12 +12,18 @@ import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.JLabel;
+import java.awt.event.ActionListener;
+import javax.swing.JScrollPane;
 
 public class HistoryDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private final Action action = new SwingAction();
-
+	
+	String requestHistoryFileName = ("Requests-history.txt");
+	RequestsHistoryReader reader = new RequestsHistoryReader(requestHistoryFileName);
+	String result = reader.readRequestFile();
+	
 	/**
 	 * Launch the application.
 	 */
@@ -42,8 +48,8 @@ public class HistoryDialog extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		{
-			JLabel lblNoHistory = new JLabel("No History!");
-			contentPanel.add(lblNoHistory);
+			JLabel lblNewLabel = new JLabel();
+			contentPanel.add(lblNewLabel);
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -52,15 +58,13 @@ public class HistoryDialog extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("OK");
-				okButton.setAction(action);
-				okButton.setActionCommand("OK");
+				okButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						System.out.println("ok was pressed");
+						dispose();
+					}
+				});
 				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
 			}
 		}
 	}
@@ -69,9 +73,12 @@ public class HistoryDialog extends JDialog {
 		public SwingAction() {
 			putValue(NAME, "OK");
 			putValue(SHORT_DESCRIPTION, "Some short description");
-			dispose();
+			
 		}
+
+		@Override
 		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
 		}
 	}
 }

@@ -20,6 +20,12 @@ import org.tues.stefchog.polyglot.ProtobufEnvelope;
 import org.tues.stefchog.polyglot.command.FileDescriptorBuilder;
 import org.tues.stefchog.polyglot.command.ServiceCall;
 import org.tues.stefchog.polyglot.io.Output;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -36,12 +42,29 @@ public class Client {
 	List<String> names = new ArrayList();
 	List<String> values = new ArrayList();
 	
+	String requestHistoryFileName = "Requests-history.txt";
+	
     public String execute(List<String> names , List<String>values) throws DescriptorValidationException {
     	
     	//
     	this.names = names;
     	this.values = values;
     	//
+    	
+    	PrintWriter writer;
+		try {
+
+			writer = new PrintWriter(new FileOutputStream(new File(requestHistoryFileName),true));
+			//writer = new PrintWriter("Requests-history.txt", "UTF-8");
+			writer.println(names);
+	    	writer.println(values);
+	    	writer.println("delimiter");
+	    	writer.close();
+	    	System.out.println("request saved to file");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	
         OutputConfiguration outputconf = OutputConfiguration.newBuilder().
                 setDestination(Destination.STDOUT).build();
