@@ -16,3 +16,28 @@ Diploma project. Java gRPC client
 да задава “timeout” на заявката.
 да изпраща gRPC заявки към gRPC сървър.
 да вижда последните 5(пет) изпратени заявки.
+
+
+Инструкции за употреба:
+
+1.Изтегля се репото като ZIP файл (dev branch-a!).
+2.Файла “ gRPC-client-master.zip ” се запазва и разархивира в директория по избор.
+3. За да се стартира проекта е необходимо да има инсталирана подходяща работна среда ( в нашия случай Eclipse IDE ). След това трябва да се добави в Eclipse като Maven проект –> File/Import/Existing Maven Project
+
+4. Изключително важно е след импортирането на клиента и демо сървъра да се извършат следните стъпки: 
+      Десен бутон на проекта -> Run as/Maven generate sources
+      Десен бутон на проекта -> Maven/Update Project
+      Десен бутон на проекта -> Refresh
+      
+5. В Eclipse се отива на Help → Eclipse Marketplace и на Find се въвежда 
+Spring и се инсталира Spring Tools 4 - for Spring Boot(aka Spring Tool Suite 4).
+
+6.Стартиране на демо сървъра
+Десен бутон на blueprint-spring-service --> Run as/Spring boot application
+
+7. Стартиране на графичният клиент
+Десен бутон на клас ClientView.java → Run as/ Java application
+
+8. Изпращане на заявка
+Създава се желаният брой полета за входящи данни чрез бутона Add.
+
