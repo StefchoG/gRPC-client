@@ -53,7 +53,7 @@ public class Client {
     	this.values = values;
     	//
     	
-    	writeRequestToFile.writeRequestFIle(names, values);
+    	writeRequestToFile.writeRequestFile(names, values);
     	
         OutputConfiguration outputconf = OutputConfiguration.newBuilder().
                 setDestination(Destination.STDOUT).build();

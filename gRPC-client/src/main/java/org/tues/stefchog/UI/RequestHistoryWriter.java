@@ -25,7 +25,7 @@ public class RequestHistoryWriter {
 		this.fileName = fileName;
 	}
 
-	public void writeRequestFIle(List<String> names, List<String> values) {
+	public void writeRequestFile(List<String> names, List<String> values) {
 		PrintWriter writer;
 		try {
 			writer = new PrintWriter(new FileOutputStream(new File(fileName),true));

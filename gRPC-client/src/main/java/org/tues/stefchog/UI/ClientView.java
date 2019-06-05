@@ -32,6 +32,14 @@ import javax.swing.JPanel;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.JScrollPane;
+import javax.swing.BoxLayout;
+import javax.swing.ScrollPaneConstants;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import net.miginfocom.swing.MigLayout;
+import java.awt.CardLayout;
 
 public class ClientView {
 
@@ -76,12 +84,29 @@ public class ClientView {
 		Border border = BorderFactory.createLineBorder(Color.BLACK);
 	    frame.getContentPane().setLayout(null);
 	    
+	    JScrollPane scrollPane = new JScrollPane();
+	    scrollPane.setBounds(0, 0, 383, 304);
+	    frame.getContentPane().add(scrollPane);
+	    
+	    JPanel panel = new JPanel();
+	    scrollPane.setViewportView(panel);
+	    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+	    
 	    JLabel lblNewLabel = new JLabel("Polyglot - a GUI client!");
-	    lblNewLabel.setBounds(0, 0, 193, 29);
+	    panel.add(lblNewLabel);
 	    lblNewLabel.setForeground(new Color(255, 165, 0));
 	    lblNewLabel.setBackground(new Color(0, 0, 0));
 	    lblNewLabel.setFont(new Font("Arial", Font.BOLD, 18));
-	    frame.getContentPane().add(lblNewLabel);
+	    
+	    JPanel panel_1 = new JPanel();
+	    panel.add(panel_1);
+	    
+	    JLabel lblNewLabel_1 = new JLabel("New label");
+	    
+	    JLabel lblNewLabel_2 = new JLabel("New label");
+	    panel_1.setLayout(new FlowLayout(FlowLayout.LEFT, 64, 10));
+	    panel_1.add(lblNewLabel_1);
+	    panel_1.add(lblNewLabel_2);
 	    
 	    JButton historyButton = new JButton("History");
 	    historyButton.setBounds(393, 5, 81, 23);
@@ -99,14 +124,6 @@ public class ClientView {
 	    			ex.printStackTrace();
 	    		}
 	    	}		});
-	    
-	    JLabel labelKeyName = new JLabel("Key name");
-	    labelKeyName.setBounds(21, 34, 87, 14);
-	    frame.getContentPane().add(labelKeyName);
-		
-				JLabel labelKeyValue = new JLabel("Key value");
-				labelKeyValue.setBounds(118, 34, 101, 14);
-				frame.getContentPane().add(labelKeyValue);
 		
 		JButton addFormButton = new JButton("Add");
 		addFormButton.setBounds(413, 40, 61, 23);
@@ -130,26 +147,30 @@ public class ClientView {
 				JTextField value = new JTextField();
 
 				
-				//Create the 
+//				//Create the 
 				name.setBounds(10,textFieldNames.size()  * 30 + 55, 86, 20);
 				name.setColumns(10);
 				value.setBounds(117,textFieldNames.size()  * 30 + 55, 86, 20);
 				value.setColumns(10);
 				
+				
+
+				
 				textFieldNames.add(name);
 				textFieldValues.add(value);
 				
-//				scrollPane.add(name);
-//				scrollPane.add(value);
-//				scrollPane.setViewportView(name);
-//				scrollPane.setViewportView(value);
-				
-				for(int i=0;i<textFieldNames.size();i++) {
-					frame.getContentPane().add(textFieldNames.get(i));
-					frame.getContentPane().add(textFieldValues.get(i));
-					//Update the GUI
-					frame.repaint();
-				}
+				JPanel fieldsPanel = new JPanel();
+			    fieldsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 32, 10));
+			    panel.add(fieldsPanel);
+			    
+
+			    fieldsPanel.add(name);
+			    fieldsPanel.add(value);
+//				panel.add(name);
+//				panel.add(value);
+			    fieldsPanel.updateUI();;
+			    panel.repaint();
+				frame.repaint();
 			}
 		});
 		

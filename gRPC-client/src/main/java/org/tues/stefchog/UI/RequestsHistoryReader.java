@@ -2,40 +2,45 @@ package org.tues.stefchog.UI;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class RequestsHistoryReader {
 	private String fileName;
-	public String getFileName() {
-		return fileName;
-	}
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
+	
 	public RequestsHistoryReader(String fileName) {
 		super();
 		this.fileName = fileName;
 	}
 	
-	public String readRequestFile() {
+	public String getFileName() {
+		return fileName;
+	}
+	
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	
+	public List<String> readRequestFile() {
 		File file = new File(fileName);
 		Scanner sc = null;
 		try {
 			sc = new Scanner(file);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		sc.useDelimiter("delimiter");
 		
-		String result = sc.next();
-		System.out.println(result);
+		List <String> result = new ArrayList();
+		result.add(sc.next());
 		while(sc.hasNext()) {
-			result =sc.next();
-			System.out.println(result);
+			result.add(sc.next());
 		}
 		sc.close();
-		return result;
+		
+		System.out.println(result);
+		return 	result.subList(result.size()-6 , result.size() );
 	}
 	
 	
