@@ -10,6 +10,11 @@ import java.awt.event.ActionListener;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -26,6 +31,8 @@ import javax.swing.border.Border;
 import com.google.protobuf.Descriptors.DescriptorValidationException;
 
 import io.grpc.internal.testing.TestClientStreamTracer;
+import io.netty.util.concurrent.Future;
+
 import javax.swing.JTextField;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
@@ -183,24 +190,51 @@ public class ClientView {
 		frame.getContentPane().add(sendButton);
 		
 		
-		sendButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Client client = new Client();
-				String resultMessage = "";
-				try {
-				    List<String> names = textFieldNames.stream().map(n -> n.getText()).collect(Collectors.toList());
-				    List<String> values = textFieldValues.stream().map(v -> v.getText()).collect(Collectors.toList());
+		final Runnable stuffToDo = new Thread() {
+			  @Override 
+			  public void run() { 
+			    /* Do stuff here. */ 
+				  sendButton.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							Client client = new Client();
+							String resultMessage = "";
+							try {
+							    List<String> names = textFieldNames.stream().map(n -> n.getText()).collect(Collectors.toList());
+							    List<String> values = textFieldValues.stream().map(v -> v.getText()).collect(Collectors.toList());
 
-					resultMessage = client.execute(names , values);
-					
-				} catch (DescriptorValidationException e1) {
-					// TODO Auto-generated catch block
-					String errorMessage = "error Exception get message:" + e1.getMessage();
-					JOptionPane.showMessageDialog(sendButton, errorMessage);
-				}
-				JOptionPane.showMessageDialog(sendButton,resultMessage);
+								resultMessage = client.execute(names , values);
+								
+							} catch (DescriptorValidationException e1) {
+								// TODO Auto-generated catch block
+								String errorMessage = "error Exception get message:" + e1.getMessage();
+								JOptionPane.showMessageDialog(sendButton, errorMessage);
+							}
+							JOptionPane.showMessageDialog(sendButton,resultMessage);
+						}
+					});		
+			  }
+			};
+
+			final ExecutorService executor = Executors.newSingleThreadExecutor();
+			final java.util.concurrent.Future<?> future = executor.submit(stuffToDo);
+			executor.shutdown(); // This does not cancel the already-scheduled task.
+
+			try { 
+			  future.get(10, TimeUnit.SECONDS); 
 			}
-		});		
+			catch (InterruptedException ie) { 
+			  /* Handle the interruption. Or ignore it. */ 
+			}
+			catch (ExecutionException ee) { 
+			  /* Handle the error. Or ignore it. */ 
+			}
+			catch (TimeoutException te) { 
+			  /* Handle the timeout. Or ignore it. */ 
+			}
+			if (!executor.isTerminated())
+			    executor.shutdownNow(); // If you want to stop the code that hasn't finished.
+		
+		
 	}
 }
